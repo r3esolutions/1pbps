@@ -60,7 +60,7 @@ export default async function ResellerClients({ params }: any) {
               <th className="p-4 text-left">Customer</th>
               <th className="p-4 text-left">Email</th>
               <th className="p-4 text-left">Phone</th>
-              <th className="p-4 text-center">Status</th>
+              <th className="p-4 text-center">Status</th><th className="p-4 text-center">Action</th>
             </tr>
           </thead>
 
@@ -74,7 +74,7 @@ export default async function ResellerClients({ params }: any) {
               <td className="p-4">{c.full_name}</td>
               <td className="p-4">{c.email}</td>
               <td className="p-4">{c.phone || "-"}</td>
-              <td className="p-4 text-center">{c.status}</td>
+              <td className="p-4 text-center">{c.status}</td><td className="p-4 text-center"><form action={`/api/admin/resellers//clients//remove`} method="POST"><button className="rounded bg-red-600 px-3 py-2 text-white">Remove</button></form></td>
             </tr>
           ))}
 
