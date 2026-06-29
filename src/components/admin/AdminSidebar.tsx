@@ -26,6 +26,8 @@ export default function AdminSidebar() {
         <div className={heading}>Billing</div>
         <Link href="/admin/orders" className={item}>Orders</Link>
         <Link href="/admin/invoices" className={item}>Invoices</Link>
+        <Link href="/admin/payments" className={item}>Payments</Link>
+        <Link href="/admin/transactions" className={item}>Transactions</Link>
 
         <div className={heading}>Support</div>
         <Link href="/admin/tickets" className={item}>Tickets</Link>
