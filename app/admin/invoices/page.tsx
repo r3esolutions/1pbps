@@ -78,7 +78,7 @@ export default async function InvoicesPage() {
                     }
                   >
                     {i.status}
-                  </span></td><td className="p-4 text-center"><a href={`/admin/invoices/`} className="rounded bg-cyan-600 px-3 py-2 text-black font-semibold">View</a></td>
+                  </span></td><td className="p-4 text-center"><a href={`/admin/invoices/${i.id}`} className="rounded bg-cyan-600 px-3 py-2 text-black font-semibold">View</a></td>
 
               </tr>
             ))}
