@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PaymentsActions from "@/src/components/admin/PaymentsActions";
 
 async function getPayments() {
   const res = await fetch("http://127.0.0.1:3000/api/admin/payments", {
@@ -64,12 +65,10 @@ export default async function PaymentsPage() {
 </td>
 
 <td className="p-4 text-center">
-  <Link
-    href={`/admin/orders/${p.order_id}`}
-    className="rounded bg-cyan-600 px-3 py-1 text-sm"
-  >
-    View
-  </Link>
+<div className="flex items-center justify-center gap-2">
+<Link href={`/admin/orders/${p.order_id}`} className="rounded bg-cyan-600 px-3 py-1 text-sm">View</Link>
+<PaymentsActions orderId={p.order_id} status={p.status} />
+</div>
 </td>
               </tr>
             ))}
