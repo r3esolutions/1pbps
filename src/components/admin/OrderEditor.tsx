@@ -1,0 +1,110 @@
+"use client";
+
+import { useState } from "react";
+
+export default function OrderEditor({ order }: any) {
+
+  const [hostname,setHostname] = useState(order.hostname || "");
+  const [primaryIp,setPrimaryIp] = useState(order.primary_ip || "");
+  const [username,setUsername] = useState(order.username || "");
+  const [serverPassword,setServerPassword] = useState(
+    order.server_password || ""
+  );
+
+  const [serviceStatus,setServiceStatus] = useState(
+    order.service_status || "Pending"
+  );
+
+  const [nextDueDate,setNextDueDate] = useState(
+    order.next_due_date
+      ? String(order.next_due_date).slice(0,10)
+      : ""
+  );
+
+  async function save() {
+
+    const res = await fetch("/api/admin/update-order",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        id: order.id,
+        hostname,
+        primary_ip: primaryIp,
+        username,
+        server_password: serverPassword,
+        service_status: serviceStatus,
+        next_due_date: nextDueDate
+      })
+    });
+
+    const data = await res.json();
+
+    if(data.success){
+      alert("Order Updated");
+      location.reload();
+    } else {
+      alert(data.error || "Update Failed");
+    }
+  }
+
+  return (
+    <div className="mt-8 space-y-4">
+
+      <input
+        value={hostname}
+        onChange={(e)=>setHostname(e.target.value)}
+        placeholder="Hostname"
+        className="w-full rounded border p-3 bg-black text-white"
+      />
+
+      <input
+        value={primaryIp}
+        onChange={(e)=>setPrimaryIp(e.target.value)}
+        placeholder="Primary IP"
+        className="w-full rounded border p-3 bg-black text-white"
+      />
+
+      <input
+        value={username}
+        onChange={(e)=>setUsername(e.target.value)}
+        placeholder="Username"
+        className="w-full rounded border p-3 bg-black text-white"
+      />
+
+      <input
+        value={serverPassword}
+        onChange={(e)=>setServerPassword(e.target.value)}
+        placeholder="Server Password"
+        className="w-full rounded border p-3 bg-black text-white"
+      />
+
+      <select
+        value={serviceStatus}
+        onChange={(e)=>setServiceStatus(e.target.value)}
+        className="w-full rounded border p-3 bg-black text-white"
+      >
+        <option>Pending</option>
+        <option>Provisioning</option>
+        <option>Active</option>
+        <option>Suspended</option>
+      </select>
+
+      <input
+        type="date"
+        value={nextDueDate}
+        onChange={(e)=>setNextDueDate(e.target.value)}
+        className="w-full rounded border p-3 bg-black text-white"
+      />
+
+      <button
+        onClick={save}
+        className="rounded bg-cyan-500 px-6 py-3 font-bold text-black"
+      >
+        Save Changes
+      </button>
+
+    </div>
+  );
+}

@@ -1,0 +1,39 @@
+import Hero from "@/src/sections/Hero";
+import Stats from "@/src/sections/Stats";
+import Trusted from "@/src/sections/Trusted";
+import DedicatedPlans from "@/src/sections/DedicatedPlans";
+import ServerCategories from "@/src/sections/ServerCategories";
+import Services from "@/src/sections/Services";
+import Solutions from "@/src/sections/Solutions";
+import Pricing from "@/src/sections/Pricing";
+import Network from "@/src/sections/Network";
+import WhyUs from "@/src/sections/WhyUs";
+import Locations from "@/src/sections/Locations";
+import Partners from "@/src/sections/Partners";
+import Testimonials from "@/src/sections/Testimonials";
+import CTA from "@/src/sections/CTA";
+import Features from "@/src/sections/Features";
+import ContactBlock from "@/src/sections/ContactBlock";
+
+export default function Home() {
+  return (
+    <>
+      <Hero />
+      <Stats />
+      <Trusted />
+      <DedicatedPlans />
+      <Features />
+      <ServerCategories />
+      <Services />
+      <Solutions />
+      <Pricing />
+      <Network />
+      <WhyUs />
+      <Locations />
+      <Partners />
+      <Testimonials />
+      <ContactBlock />
+      <CTA />
+    </>
+  );
+}

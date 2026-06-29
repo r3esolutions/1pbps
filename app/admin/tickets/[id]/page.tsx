@@ -1,0 +1,85 @@
+export const dynamic = "force-dynamic";
+
+import db from "@/src/lib/db";
+import { notFound } from "next/navigation";
+import AdminReplyBox from "@/src/components/tickets/AdminReplyBox";
+
+export default async function Page(
+  { params }: { params: Promise<{ id:string }> }
+) {
+  const { id } = await params;
+
+  const [tickets]: any = await db.query(
+    `
+    SELECT
+      t.*,
+      c.full_name,
+      c.email
+    FROM tickets t
+    LEFT JOIN customers c
+      ON c.id=t.customer_id
+    WHERE t.id=?
+    LIMIT 1
+    `,
+    [id]
+  );
+
+  if (!tickets.length) {
+    notFound();
+  }
+
+  const ticket = tickets[0];
+
+  const [replies]: any = await db.query(
+    `
+    SELECT *
+    FROM ticket_replies
+    WHERE ticket_id=?
+    ORDER BY id ASC
+    `,
+    [id]
+  );
+
+  return (
+    <div className="p-8 text-white">
+
+      <h1 className="text-4xl font-bold">
+        {ticket.ticket_number}
+      </h1>
+
+      <div className="mt-4">
+        Customer: {ticket.full_name}
+      </div>
+
+      <div>Email: {ticket.email}</div>
+
+      <div className="mt-2">Status: <span className="rounded-full bg-cyan-500/20 px-3 py-1 text-cyan-400">{ticket.status}</span></div>
+
+      <div className="mt-3">Priority: <span className="rounded-full bg-red-500/20 px-3 py-1 text-red-400">{ticket.priority}</span></div>
+
+      <div className="mt-6 rounded border p-4">
+        {ticket.message}
+      </div>
+
+      <div className="mt-8 space-y-4">
+        {replies.map((r:any)=>(
+          <div
+            key={r.id}
+            className="rounded border p-4"
+          >
+            <div className="font-bold">
+              {r.admin_reply ? "Admin" : "Customer"}
+            </div>
+
+            <div className="mt-2">
+              {r.message}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <AdminReplyBox ticketId={ticket.id} />
+
+    </div>
+  );
+}

@@ -1,0 +1,47 @@
+import db from "@/src/lib/db";
+import { notFound } from "next/navigation";
+
+export default async function Page(
+  { params }: { params: Promise<{ id:string }> }
+) {
+  const { id } = await params;
+
+  const [customers]: any = await db.query(
+    "SELECT * FROM customers WHERE id=? LIMIT 1",
+    [id]
+  );
+
+  if (!customers.length) notFound();
+
+  const customer = customers[0];
+
+  const [orders]: any = await db.query(
+    "SELECT id,order_number,total,status FROM orders WHERE customer_id=? ORDER BY id DESC LIMIT 10",
+    [id]
+  );
+
+  return (
+    <div className="max-w-7xl mx-auto p-8 text-white">
+      <h1 className="text-4xl font-bold">
+        {customer.first_name} {customer.last_name}
+      </h1>
+
+      <div className="mt-6 rounded-2xl border border-white/10 p-6">
+        <div>Email: {customer.email}</div>
+        <div>Country: {customer.country}</div>
+        <div>Status: {customer.status}</div>
+        <div>Wallet: ${customer.wallet_balance}</div>
+      </div>
+
+      <div className="mt-8 rounded-2xl border border-white/10 p-6">
+        <h2 className="text-2xl font-bold mb-4">Recent Orders</h2>
+
+        {orders.map((o:any)=>(
+          <div key={o.id} className="py-2 border-b border-white/10">
+            {o.order_number} - ${o.total} - {o.status}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

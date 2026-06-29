@@ -1,0 +1,109 @@
+export const dynamic = "force-dynamic";
+
+import db from "@/src/lib/db";
+import { redirect } from "next/navigation";
+import { requireCustomer } from "@/src/lib/auth";
+
+export default async function Dashboard() {
+
+  const customer = await requireCustomer();
+  if (!customer) {
+    redirect("/login");
+  }
+
+
+  const [services]: any = await db.query(
+    "SELECT COUNT(*) total FROM orders WHERE customer_id=?",
+    [customer.id]
+  );
+
+  const [invoices]: any = await db.query(
+    "SELECT COUNT(*) total FROM invoices WHERE customer_id=?",
+    [customer.id]
+  );
+
+  const [pending]: any = await db.query(
+    "SELECT COUNT(*) total FROM orders WHERE customer_id=? AND payment_status IN ('Pending','Awaiting Verification')",
+    [customer.id]
+  );
+
+  const [spent]: any = await db.query(
+    `
+    SELECT COALESCE(SUM(total),0) total
+    FROM invoices
+    WHERE customer_id=?
+    AND status='paid'
+    `,
+    [customer.id]
+  );
+
+  const [wallet]: any = await db.query(
+    "SELECT wallet_balance,total_spent FROM customers WHERE id=? LIMIT 1",
+    [customer.id]
+  );
+
+  const [recentOrders]: any = await db.query(
+    `
+    SELECT
+      order_number,
+      location,
+      server_plan,
+      total,
+      status
+    FROM orders
+    WHERE customer_id=?
+    ORDER BY id DESC
+    LIMIT 5
+    `,
+    [customer.id]
+  );
+
+  return (
+    <div className="max-w-7xl mx-auto p-8">
+
+      <h1 className="text-4xl font-bold text-white">
+        Client Area
+      </h1>
+
+      <div className="grid md:grid-cols-5 gap-6 mt-8">
+
+        <div className="rounded-2xl border border-white/10 p-6">
+          <div className="text-gray-400">Services</div>
+          <div className="text-4xl font-bold text-cyan-400">
+            {services[0].total}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 p-6">
+          <div className="text-gray-400">Invoices</div>
+          <div className="text-4xl font-bold text-green-400">
+            {invoices[0].total}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 p-6">
+          <div className="text-gray-400">Pending Orders</div>
+          <div className="text-4xl font-bold text-yellow-400">
+            {pending[0].total}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 p-6">
+          <div className="text-gray-400">Wallet</div>
+          <div className="text-4xl font-bold text-purple-400">
+            ${wallet[0]?.wallet_balance || 0}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 p-6">
+          <div className="text-gray-400">Total Spent</div>
+          <div className="text-4xl font-bold text-red-400">
+            ${spent[0]?.total || 0}
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  );
+}

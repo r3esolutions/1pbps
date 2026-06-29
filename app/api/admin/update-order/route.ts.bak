@@ -1,0 +1,37 @@
+import { NextResponse } from "next/server";
+import db from "@/src/lib/db";
+
+export async function POST(req: Request) {
+
+  try {
+
+    const body = await req.json();
+
+    await db.query(
+      `
+      UPDATE orders
+      SET
+      payment_status=?,
+      provisioning_status=?
+      WHERE id=?
+      `,
+      [
+        body.payment_status,
+        body.provisioning_status,
+        body.order_id
+      ]
+    );
+
+    return NextResponse.json({
+      success:true
+    });
+
+  } catch(error){
+
+    return NextResponse.json({
+      success:false
+    });
+
+  }
+
+}

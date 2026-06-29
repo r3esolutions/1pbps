@@ -1,0 +1,157 @@
+"use client";
+
+import { ramOptions } from "@/src/lib/ramPricing";
+import { storageOptions } from "@/src/lib/storagePricing";
+import { useState } from "react";
+import { servers, ipv4Price } from "@/src/lib/serverPricing";
+import { getBandwidthPrice } from "@/src/lib/bandwidthPricing";
+
+import { calculateDiscount } from "@/src/lib/billingPricing";
+import { saveOrder } from "@/src/lib/orderStorage";
+export default function ServerConfigurator() {
+
+  const [server,setServer] = useState("EPYC 4245P");
+  const [ipv4,setIpv4] = useState(1);
+  const [ram,setRam] = useState("32 GB");
+  const [storage,setStorage] = useState("2x480GB SSD");
+  const [bandwidth,setBandwidth] = useState(100);
+  const [billingTerm,setBillingTerm] = useState("1 Month");
+
+  const basePrice =
+    servers[server as keyof typeof servers] || 0;
+
+  const total =
+    basePrice +
+    (ramOptions[ram as keyof typeof ramOptions] || 0) +
+    (storageOptions[storage as keyof typeof storageOptions] || 0) +
+    (ipv4 * ipv4Price) +
+    getBandwidthPrice(bandwidth);
+
+  const discount = calculateDiscount(total,billingTerm);
+
+  const finalTotal = total - discount;
+
+  const saveConfig = () => {
+    sessionStorage.setItem(
+      "serverConfig",
+      JSON.stringify({
+        server,
+        ram,
+        storage,
+        ipv4,
+        bandwidth,
+        billingTerm,
+        subtotal: total,
+        discount,
+        total: finalTotal
+      })
+    );
+
+    window.location.href = "/checkout";
+  };
+
+
+  function continueCheckout(){
+
+    saveOrder({
+      server,
+      ram,
+      storage,
+      ipv4,
+      bandwidth,
+      billingTerm,
+      total:finalTotal
+    });
+
+    window.location.href="/checkout";
+
+  }
+
+
+  return (
+    <section className="bg-black py-20 text-white">
+      <div className="mx-auto max-w-7xl px-6">
+
+        <h2 className="text-5xl font-bold">
+          Configure Your Server
+        </h2>
+
+        <div className="mt-12 grid gap-8 lg:grid-cols-2">
+
+          <div className="space-y-6">
+
+            <select
+              value={server}
+              onChange={(e)=>setServer(e.target.value)}
+              className="w-full rounded-xl bg-zinc-900 p-4"
+            >
+              {Object.keys(servers).map((item)=>(
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+
+            <input
+              type="number"
+              min="1"
+              max="32"
+              value={ipv4}
+              onChange={(e)=>setIpv4(Number(e.target.value))}
+              className="w-full rounded-xl bg-zinc-900 p-4"
+            />
+
+            <div>
+              <label className="mb-2 block">
+                Bandwidth: {bandwidth} Mbps
+              </label>
+
+              <input
+                type="range"
+                min="100"
+                max="40000"
+                step="100"
+                value={bandwidth}
+                onChange={(e)=>setBandwidth(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+
+          </div>
+
+          <div className="rounded-3xl border border-cyan-500/20 bg-zinc-950 p-8">
+
+            <h3 className="text-2xl font-bold">
+              Order Summary
+            </h3>
+            <div className="mt-8 space-y-4 text-gray-300">
+              <div className="flex justify-between"><span>Server</span><span>${basePrice}</span></div>
+              <div className="flex justify-between"><span>RAM</span><span>${ramOptions[ram as keyof typeof ramOptions] || 0}</span></div>
+              <div className="flex justify-between"><span>Storage</span><span>${storageOptions[storage as keyof typeof storageOptions] || 0}</span></div>
+              <div className="flex justify-between"><span>IPv4</span><span>${ipv4 * ipv4Price}</span></div>
+              <div className="flex justify-between"><span>Bandwidth</span><span>${getBandwidthPrice(bandwidth)}</span></div>
+              <div className="flex justify-between text-green-400"><span>Discount</span><span>-${discount}</span></div>
+            </div>
+
+            <div className="mt-8 border-t border-white/10 pt-6">
+              <div className="text-sm text-gray-500">Monthly Total</div>
+              <div className="text-4xl font-bold text-cyan-400">
+                ${finalTotal}/mo
+                </div>
+
+                <button
+                  onClick={saveConfig}
+                  className="mt-8 w-full rounded-xl bg-cyan-500 py-4 font-bold text-black"
+                >
+                  Continue To Checkout
+                </button>
+
+              </div>
+            </div>
+        </div>
+
+      </div>
+      </div>
+    </section>
+  );
+}

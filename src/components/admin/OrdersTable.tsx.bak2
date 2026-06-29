@@ -1,0 +1,86 @@
+"use client";
+
+export default function OrdersTable({ orders }: any) {
+
+  async function verify(id:number){
+    const res = await fetch("/api/admin/verify-payment",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ id })
+    });
+
+    const data = await res.json();
+
+    if(data.success){
+      location.reload();
+    }
+  }
+
+  async function reject(id:number){
+    const res = await fetch("/api/admin/reject-payment",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ id })
+    });
+
+    const data = await res.json();
+
+    if(data.success){
+      location.reload();
+    }
+  }
+
+  return (
+    <table className="w-full text-white">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Order</th>
+          <th>Customer</th>
+          <th>Email</th>
+          <th>Total</th>
+          <th>Payment</th>
+          <th>TXID</th>
+          <th>IP</th>
+          <th>Hostname</th>
+          <th>Service</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {orders.map((o:any)=>(
+          <tr key={o.id}>
+            <td>{o.id}</td>
+            <td>{o.order_number}</td>
+            <td>{o.full_name}</td>
+            <td>{o.email}</td>
+            <td>${o.total}</td>
+            <td>{o.payment_status}</td>
+            <td>{o.txid || "-"}</td>
+            <td>{o.primary_ip || "-"}</td>
+            <td>{o.hostname || "-"}</td>
+            <td>{o.service_status || "Pending"}</td>
+
+            <td>
+              <button
+                onClick={() => verify(o.id)}
+                className="mr-2 rounded bg-green-600 px-3 py-1"
+              >
+                Verify
+              </button>
+
+              <button
+                onClick={() => reject(o.id)}
+                className="rounded bg-red-600 px-3 py-1"
+              >
+                Reject
+              </button>
+            </td>
+
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}

@@ -1,0 +1,37 @@
+import db from "@/src/lib/db";
+import { notFound } from "next/navigation";
+import OrderEditor from "@/src/components/admin/OrderEditor";
+
+export default async function Page(
+  { params }: { params: Promise<{ id: string }> }
+) {
+
+  const { id } = await params;
+
+  const [rows]: any = await db.query(
+    "SELECT * FROM orders WHERE id=? LIMIT 1",
+    [id]
+  );
+
+  if (!rows.length) {
+    notFound();
+  }
+
+  const order = rows[0];
+
+  return (
+    <div className="p-8 text-white">
+
+      <h1 className="text-4xl font-bold">
+        Manage Order #{order.id}
+      </h1>
+
+      <div className="mt-4">
+        Order Number: {order.order_number}
+      </div>
+
+      <OrderEditor order={order} />
+
+    </div>
+  );
+}

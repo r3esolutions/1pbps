@@ -1,0 +1,112 @@
+export const dynamic = "force-dynamic";
+
+import db from "@/src/lib/db";
+import { requireCustomer } from "@/src/lib/auth";
+import { notFound } from "next/navigation";
+
+export default async function Page(
+  { params }: { params: Promise<{ id:string }> }
+) {
+
+  const customer = await requireCustomer();
+  const { id } = await params;
+
+  const [rows]: any = await db.query(
+    `
+    SELECT *
+    FROM orders
+    WHERE id=?
+      AND customer_id=?
+    LIMIT 1
+    `,
+    [id, customer.id]
+  );
+
+  if (!rows.length) {
+    notFound();
+  }
+
+  const service = rows[0];
+
+  return (
+    <div className="max-w-7xl mx-auto p-8 text-white">
+
+      <h1 className="text-4xl font-bold">
+        {service.server_plan}
+      </h1>
+
+      <div className="text-gray-400 mt-2">
+        Order #{service.order_number}
+
+      <div className="flex gap-3 mt-4">
+        <a href="/dashboard/services" className="rounded border border-white/10 px-4 py-2 hover:border-cyan-400">← Back</a>
+        <a href="/dashboard/tickets/new" className="rounded bg-cyan-500 px-4 py-2 text-black font-semibold">Open Support Ticket</a>
+      </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6 mt-8">
+
+        <div className="rounded-2xl border border-white/10 p-6">
+          <h2 className="text-xl font-bold mb-4">
+            Service Information
+          </h2>
+
+          <div>Location: {service.location}</div>
+          <div>Status: {service.status}</div>
+          <div>Service Status: <span className={service.service_status === "Active" ? "rounded-full bg-green-500/20 px-3 py-1 text-green-400" : "rounded-full bg-yellow-500/20 px-3 py-1 text-yellow-400"}>{service.service_status}</span></div>
+          <div>Operating System: {service.operating_system}</div>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 p-6">
+          <h2 className="text-xl font-bold mb-4">
+            Login Details
+          </h2>
+
+          <div>Hostname: {service.hostname || "-"}</div>
+          <div>Primary IP: {service.primary_ip || "-"}</div>
+          <div>Username: {service.username || "-"}</div>
+          <div>Password: {service.server_password || "-"}</div>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 p-6">
+          <h2 className="text-xl font-bold mb-4">
+            Resources
+          </h2>
+
+          <div>RAM: {service.ram}</div>
+          <div>Storage: {service.storage}</div>
+          <div>Bandwidth: {service.bandwidth}</div>
+          <div>IPv4 Qty: {service.ipv4_qty}</div>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 p-6">
+          <h2 className="text-xl font-bold mb-4">
+            Billing
+          </h2>
+
+          <div>Billing Term: {service.billing_term}</div>
+          <div>Total: ${service.total}</div>
+          <div>
+            Next Due Date:{" "}
+            {service.next_due_date
+              ? String(service.next_due_date).slice(0,10)
+              : "-"
+            }
+          </div>
+        </div>
+
+      </div>
+
+      {service.notes && (
+        <div className="rounded-2xl border border-white/10 p-6 mt-6">
+          <h2 className="text-xl font-bold mb-4">
+            Notes
+          </h2>
+
+          <div>{service.notes}</div>
+        </div>
+      )}
+
+    </div>
+  );
+}

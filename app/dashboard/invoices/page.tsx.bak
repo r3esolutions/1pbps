@@ -1,0 +1,46 @@
+export const dynamic = "force-dynamic";
+
+import db from "@/src/lib/db";
+import { requireCustomer } from "@/src/lib/auth";
+
+
+export default async function InvoicesPage() {
+  const customer = await requireCustomer();
+
+
+
+  const [rows]: any = await db.query(`
+    SELECT
+      invoice_no,
+      total,
+      status,
+      due_date
+    FROM invoices
+    WHERE customer_id = ?
+    ORDER BY id DESC
+  `,
+    [customer.id]
+  );
+
+  return (
+    <div className="p-8">
+      <h1 className="text-4xl font-bold text-white">
+        Invoices
+      </h1>
+
+      <div className="mt-8 space-y-4">
+        {rows.map((i:any)=>(
+          <div
+            key={i.invoice_no}
+            className="rounded-xl border border-white/10 p-4 text-white"
+          >
+            <div>{i.invoice_no}</div>
+            <div>${i.total}</div>
+            <div>{i.status}</div>
+            <div>{String(i.due_date)}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
+  <rect width="128" height="128" rx="20" fill="#06b6d4"/>
+  <text x="50%" y="55%" text-anchor="middle"
+        font-size="56"
+        font-family="Arial"
+        fill="black"
+        font-weight="bold">
+    1P
+  </text>
+</svg>

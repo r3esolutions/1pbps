@@ -1,0 +1,108 @@
+"use client";
+
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useState } from "react";
+
+export default function Header() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-zinc-950/70 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+
+        <a href="/" className="flex flex-col">
+          <span className="text-3xl font-extrabold text-white">
+            1<span className="text-cyan-400">PBPS</span>
+          </span>
+          <span className="text-xs text-gray-500">
+            Enterprise Infrastructure
+          </span>
+        </a>
+
+        <nav className="hidden xl:flex items-center gap-8 text-sm font-medium">
+
+          <div className="group relative">
+            <button className="text-gray-300 hover:text-cyan-400">
+              Dedicated Servers
+            </button>
+
+            <div className="absolute top-8 left-0 hidden group-hover:block w-72 rounded-2xl border border-white/10 bg-zinc-950 p-4 shadow-2xl">
+              <div className="space-y-3">
+                <a href="/dedicated-servers" className="block text-white hover:text-cyan-400">Dedicated Servers</a>
+                <a href="/gpu-servers" className="block text-white hover:text-cyan-400">GPU Servers</a>
+                <a href="/dedicated-servers/amsterdam" className="block text-white hover:text-cyan-400">AMD EPYC Servers</a>
+                <a href="/dedicated-servers/frankfurt" className="block text-white hover:text-cyan-400">Intel Xeon Servers</a>
+                <a href="/dedicated-servers/london" className="block text-white hover:text-cyan-400">Storage Servers</a>
+              </div>
+            </div>
+          </div>
+
+          <div className="group relative">
+            <button className="text-gray-300 hover:text-cyan-400">
+              Locations
+            </button>
+
+            <div className="absolute top-8 left-0 hidden group-hover:block w-72 rounded-2xl border border-white/10 bg-zinc-950 p-4 shadow-2xl">
+              <div className="grid grid-cols-2 gap-2">
+                <a href="/usa-dedicated-servers" className="text-white hover:text-cyan-400">USA</a>
+                <a href="/germany-dedicated-servers" className="text-white hover:text-cyan-400">Germany</a>
+                <a href="/uk-dedicated-servers" className="text-white hover:text-cyan-400">United Kingdom</a>
+                <a href="/france-dedicated-servers" className="text-white hover:text-cyan-400">France</a>
+                <a href="/netherlands-dedicated-servers" className="text-white hover:text-cyan-400">Netherlands</a>
+                <a href="/singapore-dedicated-servers" className="text-white hover:text-cyan-400">Singapore</a>
+              </div>
+            </div>
+          </div>
+
+          <a href="/network" className="text-gray-300 hover:text-cyan-400">
+            Network
+          </a>
+
+          <a href="/about" className="text-gray-300 hover:text-cyan-400">
+            Company
+          </a>
+
+          <a href="/contact" className="text-gray-300 hover:text-cyan-400">
+            Contact
+          </a>
+        </nav>
+
+        <div className="hidden md:flex items-center gap-3">
+          <LanguageSwitcher />
+
+          <a
+            href="#"
+            className="rounded-xl border border-white/10 px-5 py-2 text-white"
+          >
+            Client Portal
+          </a>
+
+          <a
+            href="/configure-server"
+            className="rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 px-5 py-2 font-semibold text-black"
+          >
+            Configure Server
+          </a>
+        </div>
+
+        <button
+          onClick={() => setOpen(!open)}
+          className="md:hidden text-white text-3xl"
+        >
+          ☰
+        </button>
+      </div>
+
+      {open && (
+        <div className="border-t border-white/10 bg-zinc-950 md:hidden">
+          <a href="/dedicated-servers" className="block px-6 py-4 text-white">Dedicated Servers</a>
+          <a href="/gpu-servers" className="block px-6 py-4 text-white">GPU Servers</a>
+          <a href="/locations" className="block px-6 py-4 text-white">Locations</a>
+          <a href="/network" className="block px-6 py-4 text-white">Network</a>
+          <a href="/about" className="block px-6 py-4 text-white">Company</a>
+          <a href="/contact" className="block px-6 py-4 text-white">Contact</a>
+        </div>
+      )}
+    </header>
+  );
+}
