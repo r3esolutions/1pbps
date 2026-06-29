@@ -29,7 +29,18 @@ export default async function AdminInvoiceDetails({ params }: any) {
   const invoice = rows[0];
 
   return (
-    <div className="mx-auto max-w-6xl p-8 text-white">
+    <div className="mx-auto max-w-6xl p-8 bg-white text-black print:p-0">
+<div className="mb-8 flex items-start justify-between border-b pb-6">
+<div>
+<h1 className="text-3xl font-bold text-cyan-700">1PBPS</h1>
+<p>Dedicated Servers • VPS • Colocation</p>
+<p>support@1pbps.com</p>
+<p>https://1pbps.com</p>
+</div>
+<div className="text-right">
+<h2 className="text-3xl font-bold">TAX INVOICE</h2>
+</div>
+</div>
 
       <div className="mb-8 flex items-center justify-between">
         <div>
