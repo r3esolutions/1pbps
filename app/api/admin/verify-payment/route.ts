@@ -115,6 +115,29 @@ export async function POST(req: Request) {
 
     await db.query(
       `
+    await db.query(`
+      INSERT INTO transactions (
+        order_id,
+        customer_id,
+        invoice_id,
+        gateway,
+        amount,
+        currency,
+        type,
+        status
+      )
+      VALUES (?,?,?,?,?,?,?,?)
+    `,[
+      order.id,
+      order.customer_id,
+      nextId,
+      "Manual",
+      order.total,
+      "USD",
+      "payment",
+      "Completed"
+    ]);
+
       INSERT INTO admin_activity_logs
       (
         admin_id,
