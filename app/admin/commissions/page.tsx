@@ -24,7 +24,7 @@ export default async function CommissionsPage() {
   return (
     <div className="max-w-7xl mx-auto p-8 text-white">
 
-      <div className="flex items-center justify-between mb-8">
+      <div className="mb-8 flex items-center justify-between">
         <h1 className="text-4xl font-bold">
           Reseller Commissions
         </h1>
@@ -49,13 +49,17 @@ export default async function CommissionsPage() {
               <th className="p-4 text-right">Amount</th>
               <th className="p-4 text-right">Commission</th>
               <th className="p-4 text-center">Status</th>
+              <th className="p-4 text-center">Action</th>
             </tr>
           </thead>
 
           <tbody>
 
             {rows.map((r:any)=>(
-              <tr key={r.id} className="border-t border-white/10">
+              <tr
+                key={r.id}
+                className="border-t border-white/10"
+              >
 
                 <td className="p-4">{r.invoice_no}</td>
 
@@ -72,7 +76,34 @@ export default async function CommissionsPage() {
                 </td>
 
                 <td className="p-4 text-center">
-                  {r.status}
+                  <span
+                    className={
+                      r.status === "paid"
+                        ? "rounded-full bg-green-500/20 px-3 py-1 text-green-400"
+                        : "rounded-full bg-yellow-500/20 px-3 py-1 text-yellow-400"
+                    }
+                  >
+                    {r.status}
+                  </span>
+                </td>
+
+                <td className="p-4 text-center">
+                  {r.status === "pending" ? (
+                    <form
+                      action={`/api/admin/commissions/${r.id}/approve`}
+                      method="post"
+                    >
+                      <button
+                        className="rounded bg-cyan-600 px-3 py-2 font-semibold text-black hover:bg-cyan-500"
+                      >
+                        Approve
+                      </button>
+                    </form>
+                  ) : (
+                    <span className="text-green-400 font-semibold">
+                      Completed
+                    </span>
+                  )}
                 </td>
 
               </tr>
