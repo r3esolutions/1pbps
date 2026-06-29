@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import db from "@/src/lib/db";
+import { requireAdminApi } from "@/src/lib/adminAuth";
 
 export async function GET() {
+  await requireAdminApi();
 
   try {
 
