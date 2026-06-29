@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import db from "@/src/lib/db";
+import { requireAdminApi } from "@/src/lib/adminAuth";
 
 export async function POST(req: Request) {
+  await requireAdminApi();
   try {
 
     const body = await req.json();
@@ -59,6 +61,7 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
+  await requireAdminApi();
 
   const [rows]: any = await db.query(`
     SELECT *
