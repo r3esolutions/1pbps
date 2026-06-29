@@ -1,6 +1,7 @@
 import db from "@/src/lib/db";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import PrintButton from "@/src/components/admin/PrintButton";
 
 export default async function AdminInvoiceDetails({ params }: any) {
 
@@ -40,6 +41,8 @@ export default async function AdminInvoiceDetails({ params }: any) {
         <Link
           href="/admin/invoices"
           className="rounded bg-zinc-800 px-4 py-2"
+
+        <PrintButton />
         >
           Back
         </Link>
