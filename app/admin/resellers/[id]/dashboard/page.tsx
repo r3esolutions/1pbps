@@ -39,6 +39,22 @@ export default async function ResellerDashboard({ params }: any) {
     [id]
   );
 
+  const [walletHistory]: any = await db.query(
+    `
+    SELECT
+      type,
+      amount,
+      balance_after,
+      description,
+      created_at
+    FROM reseller_wallet_transactions
+    WHERE reseller_id=?
+    ORDER BY id DESC
+    LIMIT 10
+    `,
+    [id]
+  );
+
   return (
     <div className="max-w-7xl mx-auto p-8 text-white">
 
