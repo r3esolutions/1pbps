@@ -1,7 +1,9 @@
 import db from "@/src/lib/db";
+import { requireAdminApi } from "@/src/lib/adminAuth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  await requireAdminApi();
 
   const form = await req.formData();
 

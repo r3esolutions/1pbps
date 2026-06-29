@@ -1,10 +1,12 @@
 import db from "@/src/lib/db";
+import { requireAdminApi } from "@/src/lib/adminAuth";
 import { NextResponse } from "next/server";
 
 export async function POST(
   req: Request,
   { params }: any
 ) {
+  await requireAdminApi();
 
   const { id, clientId } = await params;
 
