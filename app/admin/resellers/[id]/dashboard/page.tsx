@@ -55,6 +55,21 @@ export default async function ResellerDashboard({ params }: any) {
     [id]
   );
 
+  const [commissions]: any = await db.query(
+    `
+    SELECT
+      invoice_id,
+      commission_amount,
+      status,
+      created_at
+    FROM reseller_commissions
+    WHERE reseller_id=?
+    ORDER BY id DESC
+    LIMIT 10
+    `,
+    [id]
+  );
+
   return (
     <div className="max-w-7xl mx-auto p-8 text-white">
 
