@@ -133,7 +133,68 @@ export async function POST(req: Request) {
       ]
     );
 
-    await db.query("COMMIT");
+    const [resellerRows]: any = await db.query(`
+  SELECT
+    rc.reseller_id,
+    r.discount_percent
+  FROM reseller_clients rc
+  INNER JOIN resellers r
+    ON r.id = rc.reseller_id
+  WHERE rc.customer_id = ?
+  LIMIT 1
+  `,
+  [order.customer_id]
+);
+
+if (resellerRows.length) {
+
+  const reseller = resellerRows[0];
+
+  const [[exists]]: any = await db.query(
+    `
+    SELECT COUNT(*) total
+    FROM reseller_commissions
+    WHERE invoice_id=?
+    `,
+    [nextId]
+  );
+
+  if (!exists.total) {
+
+    const commission =
+      Number(order.total) *
+      Number(reseller.discount_percent) / 100;
+
+    await db.query(
+      `
+      INSERT INTO reseller_commissions
+      (
+        reseller_id,
+        customer_id,
+        invoice_id,
+        order_id,
+        invoice_total,
+        commission_percent,
+        commission_amount
+      )
+      VALUES (?,?,?,?,?,?,?)
+      `,
+      [
+        reseller.reseller_id,
+        order.customer_id,
+        nextId,
+        order.id,
+        order.total,
+        reseller.discount_percent,
+        commission
+      ]
+    );
+
+  }
+
+}
+
+await db.query("COMMIT");
 
     return NextResponse.json({
       success: true
