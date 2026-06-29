@@ -4,7 +4,9 @@ import Link from "next/link";
 import PrintButton from "@/src/components/admin/PrintButton";
 
 export default async function AdminInvoiceDetails({ params }: any) {
+  const { id } = await params;
 
+  console.log("Invoice ID:", id);
   const [rows]: any = await db.query(
     `
     SELECT
@@ -20,9 +22,10 @@ export default async function AdminInvoiceDetails({ params }: any) {
     WHERE i.id=?
     LIMIT 1
     `,
-    [params.id]
+    [id]
   );
 
+  console.log("Rows:", rows);
   if (!rows.length) {
     notFound();
   }
@@ -57,7 +60,7 @@ export default async function AdminInvoiceDetails({ params }: any) {
           <div className="mt-4 text-sm">
 
             <p>
-              <strong>Invoice:</strong> {invoice.invoice_no}
+              <strong>Invoice:</strong> {invoice.invoice_no}<br/><strong>Status:</strong> <span className="rounded bg-green-600 px-2 py-1 text-white">{String(invoice.status).toUpperCase()}</span>
             </p>
 
             <p>
@@ -194,3 +197,19 @@ export default async function AdminInvoiceDetails({ params }: any) {
     </div>
   );
 }
+
+{/* Footer */}
+<div className="mt-12 border-t pt-8 text-sm text-gray-600">
+  <div className="flex justify-between">
+    <div>
+      <p><strong>Terms:</strong></p>
+      <p>Payment received in full.</p>
+      <p>Thank you for choosing 1PBPS.</p>
+    </div>
+
+    <div className="text-right">
+      <p className="mb-10">Authorized Signatory</p>
+      <strong>1PBPS</strong>
+    </div>
+  </div>
+</div>
