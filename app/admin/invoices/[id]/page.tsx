@@ -4,7 +4,6 @@ import Link from "next/link";
 import PrintButton from "@/src/components/admin/PrintButton";
 
 export default async function AdminInvoiceDetails({ params }: any) {
-
   const [rows]: any = await db.query(
     `
     SELECT
@@ -30,65 +29,78 @@ export default async function AdminInvoiceDetails({ params }: any) {
   const invoice = rows[0];
 
   return (
-    <div className="max-w-6xl mx-auto p-8 text-white">
+    <div className="mx-auto max-w-6xl p-8 text-white">
 
-      <div className="flex items-center justify-between">
-
-        <h1 className="text-4xl font-bold">
-          {invoice.invoice_no}
-        </h1>
-
-        <Link
-          href="/admin/invoices"
-          className="rounded bg-zinc-800 px-4 py-2"
-
-        >
-          Back
-        </Link>
-
-        <PrintButton />
-
-      </div>
-
-      <div className="mt-8 grid grid-cols-2 gap-8">
-
-        <div className="rounded-2xl border border-white/10 p-6">
-
-          <h2 className="mb-4 text-xl font-bold">
-            Customer
-          </h2>
-
-          <p>{invoice.full_name}</p>
-          <p>{invoice.email}</p>
-
-          <div className="mt-4">
-            <strong>GST:</strong> {invoice.gst_number || "-"}
-          </div>
-
-          <div className="mt-2 whitespace-pre-wrap">
-            {invoice.billing_address || "-"}
-          </div>
-
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-4xl font-bold">Invoice</h1>
+          <p className="mt-2 text-cyan-400 text-xl">
+            {invoice.invoice_no}
+          </p>
         </div>
 
-        <div className="rounded-2xl border border-white/10 p-6">
+        <div className="flex gap-3">
+          <Link
+            href="/admin/invoices"
+            className="rounded bg-zinc-800 px-4 py-2"
+          >
+            Back
+          </Link>
 
-          <h2 className="mb-4 text-xl font-bold">
-            Invoice
-          </h2>
+          <PrintButton />
+        </div>
+      </div>
 
-          <p><strong>Order:</strong> {invoice.order_number}</p>
-          <p><strong>Status:</strong> {invoice.status}</p>
-          <p><strong>Subtotal:</strong> ${invoice.subtotal}</p>
-          <p><strong>GST:</strong> ${invoice.gst_amount}</p>
-          <p><strong>Total:</strong> ${invoice.total}</p>
-          <p><strong>Due:</strong> {String(invoice.due_date).slice(0,10)}</p>
+      <div className="grid gap-8 md:grid-cols-2">
 
+        <div className="rounded-2xl border border-white/10 bg-zinc-900 p-6">
+          <h2 className="mb-4 text-xl font-bold">Customer Details</h2>
+
+          <p><strong>Name:</strong> {invoice.full_name}</p>
+          <p><strong>Email:</strong> {invoice.email}</p>
+          <p><strong>GST:</strong> {invoice.gst_number || "-"}</p>
+
+          <div className="mt-4">
+            <strong>Billing Address</strong>
+            <div className="mt-2 whitespace-pre-wrap text-gray-300">
+              {invoice.billing_address || "-"}
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-zinc-900 p-6">
+          <h2 className="mb-4 text-xl font-bold">Invoice Summary</h2>
+
+          <div className="space-y-3">
+            <p><strong>Order No:</strong> {invoice.order_number}</p>
+            <p><strong>Status:</strong> {invoice.status}</p>
+            <p><strong>Subtotal:</strong> ${Number(invoice.subtotal).toFixed(2)}</p>
+            <p><strong>GST:</strong> ${Number(invoice.gst_amount).toFixed(2)}</p>
+
+            <hr className="border-white/10" />
+
+            <p className="text-xl font-bold text-cyan-400">
+              Total: ${Number(invoice.total).toFixed(2)}
+            </p>
+
+            <p>
+              <strong>Due Date:</strong>{" "}
+              {invoice.due_date
+                ? String(invoice.due_date).slice(0,10)
+                : "-"}
+            </p>
+
+            <p>
+              <strong>Created:</strong>{" "}
+              {invoice.created_at
+                ? String(invoice.created_at).slice(0,19)
+                : "-"}
+            </p>
+          </div>
         </div>
 
       </div>
 
     </div>
   );
-
 }
