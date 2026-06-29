@@ -55,8 +55,7 @@ export default async function ResellersPage() {
                 <td className="p-4">{r.email}</td>
                 <td className="p-4 text-right">${Number(r.credit).toFixed(2)}</td>
                 <td className="p-4 text-center">{r.discount_percent}%</td>
-                <td className="p-4 text-center">{r.status}</td>
-              </tr>
+                <td className="p-4 text-center">{r.status}</td><td class="p-4 text-center"><a href={`/admin/resellers/`} className="rounded bg-cyan-600 px-3 py-2 text-black">Edit</a></td></tr>
             ))}
           </tbody>
 
