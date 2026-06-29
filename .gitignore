@@ -1,7 +1,12 @@
-node_modules
-.next
+node_modules/
+.next/
+.vercel/
 .env
-.env.local
+.env.*
 *.log
-npm-debug.log
-newpbps.tar.gz
+*.tar
+*.tar.gz
+*.zip
+*.bak
+*.bak*
+backup/
