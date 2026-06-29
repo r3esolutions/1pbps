@@ -31,7 +31,7 @@ export default async function PaymentsPage() {
               <th className="p-4 text-left">Customer</th>
               <th className="p-4 text-left">Order</th>
               <th className="p-4 text-left">Amount</th>
-              <th className="p-4 text-left">Status</th>
+              <th className="p-4 text-left">Status</th><th className="p-4 text-center">Action</th>
             </tr>
           </thead>
 
@@ -50,15 +50,34 @@ export default async function PaymentsPage() {
                 <td className="p-4">{p.order_number}</td>
                 <td className="p-4">${Number(p.amount || 0).toFixed(2)}</td>
                 <td className="p-4">
-                  {p.status}
-                </td>
+  <span
+    className={
+      p.status === "Paid"
+        ? "rounded bg-green-600 px-2 py-1 text-xs"
+        : p.status === "Rejected"
+        ? "rounded bg-red-600 px-2 py-1 text-xs"
+        : "rounded bg-yellow-600 px-2 py-1 text-xs"
+    }
+  >
+    {p.status}
+  </span>
+</td>
+
+<td className="p-4 text-center">
+  <Link
+    href={`/admin/orders/${p.order_id}`}
+    className="rounded bg-cyan-600 px-3 py-1 text-sm"
+  >
+    View
+  </Link>
+</td>
               </tr>
             ))}
 
             {!payments.length && (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={6}
                   className="p-8 text-center text-gray-400"
                 >
                   No payments found.
