@@ -42,10 +42,11 @@ export default async function AdminInvoiceDetails({ params }: any) {
           href="/admin/invoices"
           className="rounded bg-zinc-800 px-4 py-2"
 
-        <PrintButton />
         >
           Back
         </Link>
+
+        <PrintButton />
 
       </div>
 
