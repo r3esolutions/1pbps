@@ -3,8 +3,9 @@ import db from "@/src/lib/db";
 
 export async function POST(req: Request) {
   try {
-
     const body = await req.json();
+
+    await db.query("START TRANSACTION");
 
     await db.query(
       `
@@ -36,74 +37,115 @@ export async function POST(req: Request) {
         ) billing_address
       FROM orders o
       LEFT JOIN customers c
-      ON c.id=o.customer_id
+        ON c.id=o.customer_id
       WHERE o.id=?
       LIMIT 1
       `,
       [body.id]
     );
 
-    if (rows.length) {
-
-      const order = rows[0];
-
-      const [lastInvoice]: any = await db.query(
-        "SELECT id FROM invoices ORDER BY id DESC LIMIT 1"
-      );
-
-      const invoiceNo =
-        "INV-" +
-        String(
-          ((lastInvoice?.[0]?.id || 0) + 1)
-        ).padStart(6,"0");
-
-      await db.query(
-        `
-        INSERT INTO invoices
-        (
-          invoice_no,
-          customer_id,
-          order_id,
-          subtotal,
-          total,
-          status,
-          due_date,
-          gst_number,
-          billing_name,
-          billing_address
-        )
-        VALUES
-        (
-          ?,?,?,?,?,?,
-          CURDATE(),
-          ?,?,?
-        )
-        `,
-        [
-          invoiceNo,
-          order.customer_id,
-          order.id,
-          order.total,
-          order.total,
-          "paid",
-          order.gst_number,
-          order.full_name,
-          order.billing_address
-        ]
-      );
+    if (!rows.length) {
+      await db.query("ROLLBACK");
+      return NextResponse.json({
+        success: false,
+        error: "Order not found"
+      });
     }
 
+    const order = rows[0];
+
+    const [lastInvoice]: any = await db.query(
+      "SELECT id FROM invoices ORDER BY id DESC LIMIT 1"
+    );
+
+    const nextId = (lastInvoice?.[0]?.id || 0) + 1;
+
+    const invoiceNo =
+      "INV-" + String(nextId).padStart(6, "0");
+
+    await db.query(
+      `
+      INSERT INTO invoices
+      (
+        invoice_no,
+        customer_id,
+        order_id,
+        subtotal,
+        total,
+        status,
+        due_date,
+        gst_number,
+        billing_name,
+        billing_address
+      )
+      VALUES
+      (
+        ?,?,?,?,?,?,
+        CURDATE(),
+        ?,?,?
+      )
+      `,
+      [
+        invoiceNo,
+        order.customer_id,
+        order.id,
+        order.total,
+        order.total,
+        "paid",
+        order.gst_number,
+        order.full_name,
+        order.billing_address
+      ]
+    );
+
+    await db.query(
+      `
+      UPDATE payments
+      SET
+        invoice_id=?,
+        status='Paid',
+        verified_at=NOW()
+      WHERE order_id=?
+      `,
+      [
+        nextId,
+        order.id
+      ]
+    );
+
+    await db.query(
+      `
+      INSERT INTO admin_activity_logs
+      (
+        admin_id,
+        action,
+        ip_address
+      )
+      VALUES
+      (
+        NULL,
+        ?,
+        '127.0.0.1'
+      )
+      `,
+      [
+        'Payment verified - Order ' + order.id
+      ]
+    );
+
+    await db.query("COMMIT");
+
     return NextResponse.json({
-      success:true
+      success: true
     });
 
-  } catch(error:any) {
-    console.error(error);
-    console.log(error);
+  } catch (error: any) {
+
+    await db.query("ROLLBACK");
 
     return NextResponse.json({
-      success:false,
-      error:error.message
+      success: false,
+      error: error.message
     });
   }
 }
