@@ -29,6 +29,12 @@ export default function AdminSidebar() {
         <Link href="/admin/payments" className={item}>Payments</Link>
         <Link href="/admin/transactions" className={item}>Transactions</Link>
 
+        <div className={heading}>Reseller Management</div>
+        <Link href="/admin/resellers" className={item}>Resellers</Link>
+        <Link href="/admin/commissions" className={item}>Commissions</Link>
+        <Link href="/admin/reports/top-resellers" className={item}>Top Resellers</Link>
+        <Link href="/admin/reports/commissions" className={item}>Commission Reports</Link>
+
         <div className={heading}>Support</div>
         <Link href="/admin/tickets" className={item}>Tickets</Link>
         <Link href="/admin/knowledgebase" className={item}>Knowledgebase</Link>
