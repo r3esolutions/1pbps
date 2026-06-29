@@ -4,6 +4,7 @@ import Link from "next/link";
 import PrintButton from "@/src/components/admin/PrintButton";
 
 export default async function AdminInvoiceDetails({ params }: any) {
+
   const [rows]: any = await db.query(
     `
     SELECT
@@ -29,87 +30,165 @@ export default async function AdminInvoiceDetails({ params }: any) {
   const invoice = rows[0];
 
   return (
-    <div className="mx-auto max-w-6xl p-8 bg-white text-black print:p-0">
-<div className="mb-8 flex items-start justify-between border-b pb-6">
-<div>
-<h1 className="text-3xl font-bold text-cyan-700">1PBPS</h1>
-<p>Dedicated Servers • VPS • Colocation</p>
-<p>support@1pbps.com</p>
-<p>https://1pbps.com</p>
-</div>
-<div className="text-right">
-<h2 className="text-3xl font-bold">TAX INVOICE</h2>
-</div>
-</div>
+    <div className="mx-auto max-w-5xl bg-white text-black p-10">
 
-      <div className="mb-8 flex items-center justify-between">
+      <div className="flex items-start justify-between border-b pb-6">
+
         <div>
-          <h1 className="text-4xl font-bold">Invoice</h1>
-          <p className="mt-2 text-cyan-400 text-xl">
-            {invoice.invoice_no}
+          <h1 className="text-4xl font-bold text-cyan-700">
+            1PBPS
+          </h1>
+
+          <p className="mt-2 text-gray-600">
+            Dedicated Servers • VPS • Colocation
           </p>
+
+          <p>support@1pbps.com</p>
+          <p>https://1pbps.com</p>
+
         </div>
 
-        <div className="flex gap-3">
-          <Link
-            href="/admin/invoices"
-            className="rounded bg-zinc-800 px-4 py-2"
-          >
-            Back
-          </Link>
+        <div className="text-right">
 
-          <PrintButton />
-        </div>
-      </div>
+          <h2 className="text-3xl font-bold">
+            TAX INVOICE
+          </h2>
 
-      <div className="grid gap-8 md:grid-cols-2">
+          <div className="mt-4 text-sm">
 
-        <div className="rounded-2xl border border-white/10 bg-zinc-900 p-6">
-          <h2 className="mb-4 text-xl font-bold">Customer Details</h2>
-
-          <p><strong>Name:</strong> {invoice.full_name}</p>
-          <p><strong>Email:</strong> {invoice.email}</p>
-          <p><strong>GST:</strong> {invoice.gst_number || "-"}</p>
-
-          <div className="mt-4">
-            <strong>Billing Address</strong>
-            <div className="mt-2 whitespace-pre-wrap text-gray-300">
-              {invoice.billing_address || "-"}
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-white/10 bg-zinc-900 p-6">
-          <h2 className="mb-4 text-xl font-bold">Invoice Summary</h2>
-
-          <div className="space-y-3">
-            <p><strong>Order No:</strong> {invoice.order_number}</p>
-            <p><strong>Status:</strong> {invoice.status}</p>
-            <p><strong>Subtotal:</strong> ${Number(invoice.subtotal).toFixed(2)}</p>
-            <p><strong>GST:</strong> ${Number(invoice.gst_amount).toFixed(2)}</p>
-
-            <hr className="border-white/10" />
-
-            <p className="text-xl font-bold text-cyan-400">
-              Total: ${Number(invoice.total).toFixed(2)}
+            <p>
+              <strong>Invoice:</strong> {invoice.invoice_no}
             </p>
 
             <p>
-              <strong>Due Date:</strong>{" "}
+              <strong>Order:</strong> {invoice.order_number}
+            </p>
+
+            <p>
+              <strong>Due:</strong>{" "}
               {invoice.due_date
                 ? String(invoice.due_date).slice(0,10)
                 : "-"}
             </p>
 
-            <p>
-              <strong>Created:</strong>{" "}
-              {invoice.created_at
-                ? String(invoice.created_at).slice(0,19)
-                : "-"}
-            </p>
           </div>
+
         </div>
 
+      </div>
+
+      <div className="mt-8 flex justify-end gap-3 print:hidden">
+
+        <Link
+          href="/admin/invoices"
+          className="rounded bg-zinc-800 px-4 py-2 text-white"
+        >
+          Back
+        </Link>
+
+        <PrintButton />
+
+      </div>
+
+      <div className="mt-10 grid grid-cols-2 gap-8">
+
+        <div>
+
+          <h3 className="mb-3 text-lg font-bold">
+            Bill To
+          </h3>
+
+          <p className="font-semibold">
+            {invoice.full_name}
+          </p>
+
+          <p>{invoice.email}</p>
+
+          <p className="mt-3">
+            <strong>GST:</strong> {invoice.gst_number || "-"}
+          </p>
+
+          <div className="mt-3 whitespace-pre-wrap">
+            {invoice.billing_address || "-"}
+          </div>
+
+        </div>
+
+        <div className="rounded-xl border p-5">
+
+          <div className="flex justify-between">
+            <span>Status</span>
+
+            <span className="rounded bg-green-600 px-3 py-1 text-white">
+              {invoice.status}
+            </span>
+
+          </div>
+
+          <div className="mt-4 flex justify-between">
+            <span>Subtotal</span>
+            <strong>${Number(invoice.subtotal).toFixed(2)}</strong>
+          </div>
+
+          <div className="mt-2 flex justify-between">
+            <span>GST</span>
+            <strong>${Number(invoice.gst_amount).toFixed(2)}</strong>
+          </div>
+          <hr className="my-4" />
+
+          <div className="flex justify-between text-xl font-bold">
+            <span>Total</span>
+            <span>${Number(invoice.total).toFixed(2)}</span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div className="mt-10">
+
+        <table className="w-full border border-gray-300">
+
+          <thead className="bg-gray-100">
+
+            <tr>
+              <th className="border p-3 text-left">Description</th>
+              <th className="border p-3 text-center">Qty</th>
+              <th className="border p-3 text-right">Unit Price</th>
+              <th className="border p-3 text-right">Total</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr>
+              <td className="border p-3">
+                Dedicated Server Order #{invoice.order_number}
+              </td>
+
+              <td className="border p-3 text-center">
+                1
+              </td>
+
+              <td className="border p-3 text-right">
+                ${Number(invoice.subtotal).toFixed(2)}
+              </td>
+
+              <td className="border p-3 text-right">
+                ${Number(invoice.subtotal).toFixed(2)}
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      <div className="mt-12 border-t pt-6 text-center text-sm text-gray-600">
+        <p>Thank you for choosing <strong>1PBPS</strong>.</p>
+        <p>This is a system generated invoice and does not require a signature.</p>
       </div>
 
     </div>
