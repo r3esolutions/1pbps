@@ -1,0 +1,7 @@
+ALTER TABLE resellers
+ADD COLUMN password_hash VARCHAR(255) NULL,
+ADD COLUMN api_key VARCHAR(64) NULL,
+ADD COLUMN last_login_at DATETIME NULL,
+ADD COLUMN last_login_ip VARCHAR(45) NULL,
+ADD COLUMN email_verified TINYINT(1) DEFAULT 0,
+ADD COLUMN remember_token VARCHAR(100) NULL;
