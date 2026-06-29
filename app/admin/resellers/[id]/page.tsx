@@ -71,6 +71,10 @@ export default async function EditReseller({ params }: any) {
 
       </form>
 
+<form action={`/api/admin/resellers//apikey`} method="POST">
+<button className="mt-4 rounded bg-emerald-600 px-5 py-3 font-bold text-black">Generate API Keys</button>
+</form>
+
     </div>
   );
 }
