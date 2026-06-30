@@ -1,11 +1,11 @@
 export const dynamic = "force-dynamic";
 
 import db from "@/src/lib/db";
-import { requireCustomer } from "@/src/lib/auth";
+import { getAdmin } from "@/src/lib/auth";
 
 export default async function WalletPage() {
 
-  const customer = await requireCustomer();
+  const customer = await getAdmin();
 
   const [rows]: any = await db.query(
     `

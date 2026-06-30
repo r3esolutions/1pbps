@@ -1,14 +1,14 @@
 export const dynamic = "force-dynamic";
 
 import db from "@/src/lib/db";
-import { requireCustomer } from "@/src/lib/auth";
+import { getAdmin } from "@/src/lib/auth";
 import { notFound } from "next/navigation";
 
 export default async function Page(
   { params }: { params: Promise<{ id:string }> }
 ) {
 
-  const customer = await requireCustomer();
+  const customer = await getAdmin();
   const { id } = await params;
 
   const [rows]: any = await db.query(

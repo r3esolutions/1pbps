@@ -1,32 +1,22 @@
+import { getAdmin } from "@/src/lib/auth";
 import { NextResponse } from "next/server";
 import db from "@/src/lib/db";
 
 export async function POST(req: Request) {
   try {
-
+    const customer = await getAdmin();
     const body = await req.json();
-
-    console.log("ORDER DATA:", body);
-
-    const [customer]: any = await db.query(
-      `INSERT INTO customers
-      (full_name, company_name, email, phone, country)
-      VALUES (?, ?, ?, ?, ?)`,
-      [
-        body.full_name,
-        body.company_name,
-        body.email,
-        body.phone,
-        body.country
-      ]
+    const [lastOrder]: any = await db.query(
+      "SELECT id FROM orders ORDER BY id DESC LIMIT 1"
     );
-
-    const customerId = customer.insertId;
-
+    const orderNumber =
+      "ORD-" +
+      String(((lastOrder?.[0]?.id || 0) + 1)).padStart(6, "0");
     const [order]: any = await db.query(
       `INSERT INTO orders
       (
         customer_id,
+        order_number,
         location,
         server_plan,
         ram,
@@ -40,9 +30,10 @@ export async function POST(req: Request) {
         discount,
         total
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        customerId,
+        customer.id,
+        orderNumber,
         body.location,
         body.server_plan,
         body.ram,
@@ -56,21 +47,13 @@ export async function POST(req: Request) {
         body.discount,
         body.total
       ]
-    );
-
     return NextResponse.json({
-      success:true,
-      customer_id:customerId,
-      order_id:order.insertId
+      success: true,
+      order_id: order.insertId,
+      order_number: orderNumber
     });
-
-  } catch(error:any) {
-
-    console.error("FULL ERROR =>", error);
-
-    return NextResponse.json({
+  } catch (error:any) {
       success:false,
       error:error.message
-    });
   }
 }

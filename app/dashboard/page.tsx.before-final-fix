@@ -2,11 +2,11 @@ export const dynamic = "force-dynamic";
 
 import db from "@/src/lib/db";
 import { redirect } from "next/navigation";
-import { requireCustomer } from "@/src/lib/auth";
+import { getAdmin } from "@/src/lib/auth";
 
 export default async function Dashboard() {
 
-  const customer = await requireCustomer();
+  const customer = await getAdmin();
   if (!customer) {
     redirect("/login");
   }

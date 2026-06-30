@@ -1,10 +1,11 @@
+import { getAdmin } from "@/src/lib/auth";
 import { NextResponse } from "next/server";
 import db from "@/src/lib/db";
-import { requireCustomer } from "@/src/lib/auth";
 
 export async function POST(req: Request) {
   try {
-    const customer = await requireCustomer();
+    const admin = await getAdmin();
+
     const body = await req.json();
 
     const [lastOrder]: any = await db.query(
@@ -12,8 +13,7 @@ export async function POST(req: Request) {
     );
 
     const orderNumber =
-      "ORD-" +
-      String(((lastOrder?.[0]?.id || 0) + 1)).padStart(6, "0");
+      "ORD-" + String((lastOrder?.[0]?.id || 0) + 1).padStart(6, "0");
 
     const [order]: any = await db.query(
       `INSERT INTO orders
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        customer.id,
+        admin.id,
         orderNumber,
         body.location,
         body.server_plan,
@@ -55,13 +55,15 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       order_id: order.insertId,
-      order_number: orderNumber
+      order_number: orderNumber,
     });
-
-  } catch (error:any) {
-    return NextResponse.json({
-      success:false,
-      error:error.message
-    });
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message,
+      },
+      { status: 500 }
+    );
   }
 }

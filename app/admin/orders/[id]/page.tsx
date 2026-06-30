@@ -1,36 +1,25 @@
 import db from "@/src/lib/db";
-import { notFound } from "next/navigation";
-import OrderEditor from "@/src/components/admin/OrderEditor";
 
-export default async function Page(
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const dynamic = "force-dynamic";
 
-  const { id } = await params;
+export default async function OrdersPage({ params }: any) {
 
-  const [rows]: any = await db.query(
-    "SELECT * FROM orders WHERE id=? LIMIT 1",
-    [id]
-  );
-
-  if (!rows.length) {
-    notFound();
-  }
-
-  const order = rows[0];
+  const { id } = params;
 
   return (
-    <div className="p-8 text-white">
+    <div className="text-white p-6">
 
-      <h1 className="text-4xl font-bold">
-        Manage Order #{order.id}
+      <h1 className="text-3xl font-bold mb-6">
+        Order #{id}
       </h1>
 
-      <div className="mt-4">
-        Order Number: {order.order_number}
-      </div>
+      <form action="/api/admin/provision/activate" method="POST">
+        <input type="hidden" name="order_id" value={id} />
 
-      <OrderEditor order={order} />
+        <button className="bg-green-500 text-black px-4 py-2 rounded">
+          Activate Server
+        </button>
+      </form>
 
     </div>
   );

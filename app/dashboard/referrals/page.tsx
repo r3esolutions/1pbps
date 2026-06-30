@@ -2,11 +2,11 @@ export const dynamic = "force-dynamic";
 
 import crypto from "crypto";
 import db from "@/src/lib/db";
-import { requireCustomer } from "@/src/lib/auth";
+import { getAdmin } from "@/src/lib/auth";
 
 export default async function ReferralsPage() {
 
-  const customer = await requireCustomer();
+  const customer = await getAdmin();
 
   let [referral]: any = await db.query(
     "SELECT * FROM referrals WHERE customer_id=? LIMIT 1",

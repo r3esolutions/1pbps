@@ -1,9 +1,9 @@
 export const dynamic = "force-dynamic";
 
-import { requireCustomer } from "@/src/lib/auth";
+import { getAdmin } from "@/src/lib/auth";
 
 export default async function ProfilePage() {
-  const user = await requireCustomer();
+  const user = await getAdmin();
 
   return (
     <div className="max-w-7xl mx-auto p-8 text-white">

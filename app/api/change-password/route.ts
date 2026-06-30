@@ -1,61 +1,50 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import db from "@/src/lib/db";
-import { getCurrentCustomer } from "@/src/lib/auth";
+import { getAdmin } from "@/src/lib/auth";
 
 export async function POST(req: Request) {
   try {
-    const customer = await getCurrentCustomer();
+    const admin = await getAdmin();
 
-    if (!customer) {
+    if (!admin) {
       return NextResponse.json({
         success: false,
-        error: "Unauthorized"
+        message: "UNAUTHORIZED"
       }, { status: 401 });
     }
 
     const body = await req.json();
 
-    if (
-      !body.currentPassword ||
-      !body.newPassword
-    ) {
+    if (!body.currentPassword || !body.newPassword) {
       return NextResponse.json({
         success: false,
-        error: "All fields are required"
-      });
+        message: "INVALID INPUT"
+      }, { status: 400 });
     }
 
-    const valid = await bcrypt.compare(
+    const match = await bcrypt.compare(
       body.currentPassword,
-      customer.password
+      admin.password
     );
 
-    if (!valid) {
+    if (!match) {
       return NextResponse.json({
         success: false,
-        error: "Current password is incorrect"
-      });
+        message: "WRONG PASSWORD"
+      }, { status: 400 });
     }
 
-    const hashed = await bcrypt.hash(
-      body.newPassword,
-      10
-    );
-
-    await db.query(
-      "UPDATE customers SET password=? WHERE id=?",
-      [hashed, customer.id]
-    );
+    const hashed = await bcrypt.hash(body.newPassword, 10);
 
     return NextResponse.json({
-      success: true
+      success: true,
+      message: "PASSWORD UPDATED"
     });
 
-  } catch (err: any) {
+  } catch (err) {
     return NextResponse.json({
       success: false,
-      error: err.message
-    });
+      message: "SERVER ERROR"
+    }, { status: 500 });
   }
 }

@@ -1,12 +1,12 @@
 export const dynamic = "force-dynamic";
 
 import db from "@/src/lib/db";
-import { requireCustomer } from "@/src/lib/auth";
+import { getAdmin } from "@/src/lib/auth";
 import NewTicketForm from "@/src/components/tickets/NewTicketForm";
 
 export default async function NewTicketPage() {
 
-  const customer = await requireCustomer();
+  const customer = await getAdmin();
 
   const [orders]: any = await db.query(
     `

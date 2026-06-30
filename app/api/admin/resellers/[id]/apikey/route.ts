@@ -1,3 +1,4 @@
+import { getAdmin } from "@/src/lib/auth";
 import { randomBytes } from "crypto";
 import { NextResponse } from "next/server";
 import db from "@/src/lib/db";
