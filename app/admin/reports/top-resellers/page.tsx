@@ -9,12 +9,14 @@ export default async function TopResellersPage() {
     SELECT
       r.id,
       r.company_name,
-      r.full_name,
+      c.full_name,
       r.credit,
       COUNT(DISTINCT rc.customer_id) clients,
       COUNT(DISTINCT cm.id) commissions,
       IFNULL(SUM(cm.commission_amount),0) earnings
     FROM resellers r
+    LEFT JOIN customers c
+      ON c.id=r.customer_id
     LEFT JOIN reseller_clients rc
       ON rc.reseller_id=r.id
     LEFT JOIN reseller_commissions cm

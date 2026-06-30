@@ -4,12 +4,16 @@ import db from "@/src/lib/db";
 
 export async function POST(req: Request) {
   try {
+    const admin = await getAdmin();
 
-    if (!customer) {
-      return NextResponse.json({
-        success: false,
-        message: "Unauthorized"
-      });
+    if (!admin) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        { status: 401 }
+      );
     }
 
     const body = await req.json();
@@ -20,13 +24,15 @@ export async function POST(req: Request) {
     );
 
     return NextResponse.json({
-      success: true
+      success: true,
     });
-
   } catch (err: any) {
-    return NextResponse.json({
-      success: false,
-      error: err.message
-    });
+    return NextResponse.json(
+      {
+        success: false,
+        error: err.message,
+      },
+      { status: 500 }
+    );
   }
 }
